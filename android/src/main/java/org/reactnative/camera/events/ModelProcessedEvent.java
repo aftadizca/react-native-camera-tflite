@@ -77,7 +77,7 @@ public class ModelProcessedEvent extends Event<ModelProcessedEvent> {
     mData.get(byteArray);
     WritableArray dataList = Arguments.createArray();
     for (byte b : byteArray) {
-        dataList.pushInt((int)b);
+        dataList.pushInt((int)b & 0xFF);
     }
 
     WritableMap event = Arguments.createMap();

@@ -5,6 +5,7 @@ import android.os.SystemClock;
 import java.nio.ByteBuffer;
 import java.io.ByteArrayOutputStream;
 import android.view.TextureView;
+import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 import java.util.Arrays;
@@ -50,6 +51,15 @@ public class ModelProcessorAsyncTask extends android.os.AsyncTask<Void, Void, By
       mInputBuf.rewind();
       mOutputBuf.rewind();
       mModelProcessor.run(mInputBuf, mOutputBuf);
+
+      // mOutputBuf.rewind();
+      // String a = "[";
+      // for (int i = 1; i <= 5; i++){ 
+      //     a = a + (mOutputBuf.get() & 0xFF)+ " , ";
+      //   }
+      // a = a + "]";
+      // Log.d("TEST", a);
+
     } catch (Exception e) {}
     try {
       if (mModelMaxFreqms > 0) {
@@ -66,7 +76,6 @@ public class ModelProcessorAsyncTask extends android.os.AsyncTask<Void, Void, By
   @Override
   protected void onPostExecute(ByteBuffer data) {
     super.onPostExecute(data);
-
     if (data != null) {
       mDelegate.onModelProcessed(data, mWidth, mHeight, mRotation);
     }
