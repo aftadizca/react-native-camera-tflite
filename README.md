@@ -46,14 +46,12 @@ Follow the install instructions (for android. Same as react-native-camera):
         }
     ...
 
-Now let's use the download our model file from [here](http://download.tensorflow.org/models/mobilenet_v1_2018_08_02/mobilenet_v1_1.0_224_quant.tgz), decompress it, and copy over the mobilenet_v1_1.0_224_quant.tflite file over to our project.
+Now let's use the download our model file from [here](https://github.com/aftadizca/react-native-camera-tflite/blob/master/model7.1_2020_05_26.tflite), and copy over the model7.1_2020_05_26.tflite file over to our project.
 
 ```
     mkdir -p ./android/app/src/main/assets
-    cp mobilenet_v1_1.0_224_quant.tflite ./android/app/src/main/assets
+    cp model7.1_2020_05_26.tflite ./android/app/src/main/assets
 ```
-
-Add [this](https://gist.github.com/ppsreejith/1016f74f3c0cc95c121668904da67900) file to your project root directory as Output.json
 
 Replace the content of App.js in your project root directory with the following:
 
