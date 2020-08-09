@@ -1,10 +1,6 @@
 # CHANGELOG
 1. Added support for FLOAT32 tflite model. 
 
-Related blog [article](https://medium.com/@namar/high-performance-image-classification-with-react-native-336db0a96cd)
-
-For more information, see [react-native-camera](https://github.com/react-native-community/react-native-camera). All `react-native-camera` props/features should also work with this.
-
 # Real time image classification with React Native
 
 Earlier attempts at Image classification over React Native involved sending image data to the model classifier by sending the image over the bridge or storing the image to disk and accessing the image on the native side. Here's an attempt at live image classification by processing from the camera feed on the native side and getting the output as a byte stream on the JS side using the react-native-camera-tflite library.
