@@ -156,23 +156,6 @@ We're done! Run your app with the following command.
     react-native run-android
 ```
 
-![Image Classification FTW!](https://cdn-images-1.medium.com/max/2000/1*9gvd0iTkVIlI4FvfGim6gg.gif)*Image Classification FTW!*
-
-To convert this to a hotdog not-hotdog app, just replace the processOutput function above with the following:
-
-```
-    processOutput({data}) {
-      const isHotDogProb = data[935];
-      const isHotDog = isHotDogProb > 0.2 ? "HotDog" : "Not HotDog";
-      const time = Date.now() - (_currentInstant || Date.now());
-      const output = `${isHotDog}\nTime:${time} ms`;
-      this.setState(state => ({
-       output
-      }));
-     _currentInstant = Date.now();
-    }
-```
-
 Run your app with the following command.
 
 ```
