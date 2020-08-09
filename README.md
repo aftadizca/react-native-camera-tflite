@@ -1,3 +1,6 @@
+# CHANGELOG
+1. Added support for FLOAT32 tflite model. 
+
 Related blog [article](https://medium.com/@namar/high-performance-image-classification-with-react-native-336db0a96cd)
 
 For more information, see [react-native-camera](https://github.com/react-native-community/react-native-camera). All `react-native-camera` props/features should also work with this.
@@ -21,7 +24,6 @@ Let's add our dependencies:
 
 ```
 npm i react-native-camera-tflite
-react-native link react-native-camera-tflite
 ```
 
 Follow the install instructions (for android. Same as react-native-camera):
@@ -30,19 +32,11 @@ Follow the install instructions (for android. Same as react-native-camera):
 
 ```
     ...
-    allprojects {
-        repositories {
-            maven { url "[https://jitpack.io](https://jitpack.io)" }  
-            maven { url "[https://maven.google.com](https://maven.google.com)" }
-
-    ...
-    ...
     ext {
-        compileSdkVersion           = 26
-        targetSdkVersion            = 26
-        buildToolsVersion           = "26.0.2"
-        googlePlayServicesVersion   = "12.0.1"
-        supportLibVersion           = "27.1.0"
+        buildToolsVersion = "29.0.2"
+        minSdkVersion = 16
+        compileSdkVersion = 29
+        targetSdkVersion = 29
     }
 ```
 
