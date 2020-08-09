@@ -10,12 +10,12 @@ import android.util.Log;
 import java.util.concurrent.TimeUnit;
 import java.util.Arrays;
 
-public class ModelProcessorAsyncTask extends android.os.AsyncTask<Void, Void, ByteBuffer> {
+public class ModelProcessorAsyncTask extends android.os.AsyncTask<Void, Void, float[][]> {
 
   private ModelProcessorAsyncTaskDelegate mDelegate;
   private Interpreter mModelProcessor;
   private ByteBuffer mInputBuf;
-  private ByteBuffer mOutputBuf;
+  private float[][] mOutputBuf;
   private int mModelMaxFreqms;
   private int mWidth;
   private int mHeight;
@@ -25,7 +25,7 @@ public class ModelProcessorAsyncTask extends android.os.AsyncTask<Void, Void, By
       ModelProcessorAsyncTaskDelegate delegate,
       Interpreter modelProcessor,
       ByteBuffer inputBuf,
-      ByteBuffer outputBuf,
+      float[][] outputBuf,
       int modelMaxFreqms,
       int width,
       int height,
@@ -39,26 +39,18 @@ public class ModelProcessorAsyncTask extends android.os.AsyncTask<Void, Void, By
     mWidth = width;
     mHeight = height;
     mRotation = rotation;
-  }
+  };
     
   @Override
-  protected ByteBuffer doInBackground(Void... ignored) {
+  protected float[][] doInBackground(Void... ignored) {
     if (isCancelled() || mDelegate == null || mModelProcessor == null) {
       return null;
     }
     long startTime = SystemClock.uptimeMillis();
     try {
-      mInputBuf.rewind();
-      mOutputBuf.rewind();
-      mModelProcessor.run(mInputBuf, mOutputBuf);
 
-      // mOutputBuf.rewind();
-      // String a = "[";
-      // for (int i = 1; i <= 5; i++){ 
-      //     a = a + (mOutputBuf.get() & 0xFF)+ " , ";
-      //   }
-      // a = a + "]";
-      // Log.d("TEST", a);
+      mInputBuf.rewind();
+      mModelProcessor.run(mInputBuf, mOutputBuf);
 
     } catch (Exception e) {}
     try {
@@ -74,7 +66,7 @@ public class ModelProcessorAsyncTask extends android.os.AsyncTask<Void, Void, By
   }
 
   @Override
-  protected void onPostExecute(ByteBuffer data) {
+  protected void onPostExecute(float[][] data) {
     super.onPostExecute(data);
     if (data != null) {
       mDelegate.onModelProcessed(data, mWidth, mHeight, mRotation);

@@ -46,3 +46,7 @@ package-json.lock
 
 # vscode
 .vscode
+android/.project
+android/.settings/org.eclipse.buildship.core.prefs
+examples/basic/android/.project
+examples/basic/android/.settings/org.eclipse.buildship.core.prefs

@@ -31,11 +31,15 @@ import org.reactnative.camera.utils.RNFileUtils;
 import org.reactnative.facedetector.RNFaceDetector;
 import android.content.res.AssetFileDescriptor;
 import java.io.FileInputStream;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.MappedByteBuffer;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.Tensor;
+import org.tensorflow.lite.DataType;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,13 +75,14 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
   private TextRecognizer mTextRecognizer;
   private String mModelFile;
   private Interpreter mModelProcessor;
+  private Tensor tensor;
   private int mModelMaxFreqms;
   private ByteBuffer mModelInput;
   private int[] mModelViewBuf;
   private int mModelImageDimX;
   private int mModelImageDimY;
   private int mModelOutputDim;
-  private ByteBuffer mModelOutput;
+  private float[][] mModelOutput;
   private boolean mShouldDetectFaces = false;
   private boolean mShouldGoogleDetectBarcodes = false;
   private boolean mShouldScanBarCodes = false;
@@ -206,15 +211,26 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
     if (bitmap == null) {
       return;
     }
+    if(mModelInput == null){
+      return;
+    }
+
+    mModelInput.order(ByteOrder.nativeOrder());
     mModelInput.rewind();
     bitmap.getPixels(mModelViewBuf, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
     int pixel = 0;
     for (int i = 0; i < mModelImageDimX; ++i) {
       for (int j = 0; j < mModelImageDimY; ++j) {
         final int val = mModelViewBuf[pixel++];
-        mModelInput.put((byte) ((val >> 16) & 0xFF));
-        mModelInput.put((byte) ((val >> 8) & 0xFF));
-        mModelInput.put((byte) (val & 0xFF));
+        if (tensor.dataType() == DataType.FLOAT32) {
+          mModelInput.putFloat(((val >> 16) & 0xFF) / (float) 255.0);
+          mModelInput.putFloat(((val >> 8) & 0xFF) / (float) 255.0);
+          mModelInput.putFloat((val & 0xFF) / (float) 255.0);
+        } else {
+          mModelInput.put((byte) ((val >> 16) & 0xFF));
+          mModelInput.put((byte) ((val >> 8) & 0xFF));
+          mModelInput.put((byte) (val & 0xFF));
+        }
       }
     }
   }
@@ -478,10 +494,24 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
   private void setupModelProcessor() {
     try {
       mModelProcessor = new Interpreter(loadModelFile());
-      mModelInput = ByteBuffer.allocateDirect(mModelImageDimX * mModelImageDimY * 3);
+      // get model parameter
+      tensor = mModelProcessor.getInputTensor(0);
+
+      //Log.d("TEST", "Input channel : "+Arrays.toString(tensor.shape()));
+      // [1] & [2] image size, [3] input channel
+
+      if(tensor.dataType()== DataType.FLOAT32){
+        mModelInput = ByteBuffer.allocateDirect(mModelImageDimX * mModelImageDimY * tensor.shape()[3] * 4);
+      }else{
+        mModelInput = ByteBuffer.allocateDirect(mModelImageDimX * mModelImageDimY * tensor.shape()[3]);
+      }
+
       mModelViewBuf = new int[mModelImageDimX * mModelImageDimY];
-      mModelOutput = ByteBuffer.allocateDirect(mModelOutputDim);
-    } catch(Exception e) {}
+      mModelOutput = new float[1][mModelOutputDim];
+      //mModelOutput = ByteBuffer.allocateDirect(mModelOutputDim);
+    } catch(Exception e) {
+      Log.d("ERROR",e.toString());
+    }
   }
 
   public void setGoogleVisionBarcodeType(int barcodeType) {
@@ -553,15 +583,14 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
   }
 
   @Override
-  public void onModelProcessed(ByteBuffer data, int sourceWidth, int sourceHeight, int sourceRotation) {
+  public void onModelProcessed(float[][] data, int sourceWidth, int sourceHeight, int sourceRotation) {
     if (!mShouldProcessModel) {
       return;
     }
 
-    ByteBuffer dataDetected = data == null ? ByteBuffer.allocate(0) : data;
     ImageDimensions dimensions = new ImageDimensions(sourceWidth, sourceHeight, sourceRotation, getFacing());
 
-    RNCameraViewHelper.emitModelProcessedEvent(this, dataDetected, dimensions);
+    RNCameraViewHelper.emitModelProcessedEvent(this, data, dimensions);
   }
 
   @Override

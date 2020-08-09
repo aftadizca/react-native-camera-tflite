@@ -29,14 +29,14 @@ public class ModelProcessedEvent extends Event<ModelProcessedEvent> {
 
   private double mScaleX;
   private double mScaleY;
-  private ByteBuffer mData;
+  private float[][] mData;
   private ImageDimensions mImageDimensions;
 
   private ModelProcessedEvent() {}
 
   public static ModelProcessedEvent obtain(
       int viewTag,
-      ByteBuffer data,
+      float[][] data,
       ImageDimensions dimensions,
       double scaleX,
       double scaleY) {
@@ -50,7 +50,7 @@ public class ModelProcessedEvent extends Event<ModelProcessedEvent> {
 
   private void init(
       int viewTag,
-      ByteBuffer data,
+      float[][] data,
       ImageDimensions dimensions,
       double scaleX,
       double scaleY) {
@@ -72,12 +72,12 @@ public class ModelProcessedEvent extends Event<ModelProcessedEvent> {
   }
 
   private WritableMap serializeEventData() {
-    mData.rewind();
-    byte[] byteArray = new byte[mData.capacity()];
-    mData.get(byteArray);
+    //mData.rewind();
+    //byte[] byteArray = new byte[mData.capacity()];
+    //mData.get(byteArray);
     WritableArray dataList = Arguments.createArray();
-    for (byte b : byteArray) {
-        dataList.pushInt((int)b & 0xFF);
+    for (float b : mData[0]) {
+        dataList.pushDouble(b);
     }
 
     WritableMap event = Arguments.createMap();
