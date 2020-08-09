@@ -161,7 +161,8 @@ Run your app with the following command.
 ```
     react-native run-android
 ```
-![WAYANG KULIT](https://i.ibb.co/wzgt2YP/ezgif-com-optimize.gif)*WAYANG KULIT*
+![WAYANG KULIT](https://i.ibb.co/wzgt2YP/ezgif-com-optimize.gif)
+*DEMO WAYANG KULIT*
 
 This project has a lot of rough edges. I hope to clean up this up a lot more in the coming days. The rest of the features are the same as `react-native-camera`.
 
